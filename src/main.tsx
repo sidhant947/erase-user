@@ -70,20 +70,21 @@ Devvit.addMenuItem({
 
     const author = await reddit.getUserById(authorId as string);
     const subreddit = await reddit.getCurrentSubreddit();
+    const currentModerator = await reddit.getCurrentUser(); // Get the current moderator
 
     try {
-
       await reddit.banUser({
         subredditName: subreddit.name,
         username: author?.username ?? 'unknown',
         duration: undefined,
         reason: 'Permanent Erase',
+        note: `Action taken by moderator: ${currentModerator?.username ?? 'Unknown'}` // Add moderator info
       });
 
       await reddit.muteUser({
         subredditName: subreddit.name,
         username: author?.username ?? 'unknown',
-        note: 'Muted by erase-user'
+        note: `Muted by erase-user (Mod: ${currentModerator?.username ?? 'Unknown'})` // Add moderator info
       });
 
       // Remove all content
@@ -95,7 +96,7 @@ Devvit.addMenuItem({
       }
 
       if (author?.username) {
-        ui.showToast(`${author.username} has been erased.`);
+        ui.showToast(`${author.username} has been erased`);
       } else {
         ui.showToast('Error: Author username is undefined.');
         console.error('Error: Author username is undefined.');
